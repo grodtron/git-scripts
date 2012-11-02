@@ -1,0 +1,15 @@
+# Removing Trailing Spaces 
+
+# Removes all trailing spaces from the given file.
+# converts the line endings to CRLF, because sed under
+# cygwin converts them to just LF, which I don't really want
+
+# Make sure we actually have some input!
+if [ -z "$1" ]
+then
+	echo "no input file specified"
+	exit 0
+fi
+
+sed -i 's/[ \t]*$//' $1
+unix2dos $1

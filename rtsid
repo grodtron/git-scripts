@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Remove Trailing Spaces In Directory
+
+# removes trailing spaces from all files with a given
+# extension in the current directory (recursively)
+# default extension is '.java'
+
+if ! which rts &> /dev/null;
+then
+	echo "rts (remove trailing spaces) not found!"
+	exit 1
+fi
+
+if [ -z "$1" ]
+then
+	extension=java
+	echo "no file extension specified, defaulting to '$extension'"
+else
+	extension=$1
+fi
+
+for file in $(find . -name *.$extension)
+do
+	rts $file
+done
