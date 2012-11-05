@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script to automate my git workflow.
-# 
+#
 # Goes through all modified, untracked and deleted files, and
 # interactively asks what action to take on them, then asks to
 # commit the staged changes
@@ -20,23 +20,37 @@ do
 		echo -e "Diffing $file:\n\n"
 		git diff $file
 		# rediffing allows the file to be edited in the meantime
-		echo -n "add file? (y[es]/n[o]/p[atch]/r[ediff]/c[checkout -- <file>]): "
-		
-		read -n 1 command
-		if [ $command == 'y' ]
-		then
-			echo
-			git add $file
-		elif [ $command == 'p' ]
-		then 
-			echo
-			git add -p $file
-		elif [ $command == 'c' ]
-		then 
-			echo
-			git checkout -- $file
-		fi
-			# command == 'n', don't add
+
+		while true
+		do
+			echo -n "add file? (y[es]/n[o]/p[atch]/r[ediff]/c[checkout -- <file>]): "
+			read command
+
+			if [ $command == 'y' ]
+			then
+				echo
+				git add $file
+				break
+			elif [ $command == 'n' ]
+			then
+				break
+			elif [ $command == 'p' ]
+			then
+				echo
+				git add -p $file
+				break
+			elif [ $command == 'r' ]
+			then
+				break
+			elif [ $command == 'c' ]
+			then
+				echo
+				git checkout -- $file
+				break
+			else
+				echo "Invalid command '$command'"
+			fi
+		done
 	done
 done
 
@@ -45,51 +59,79 @@ for file in $( git status --porcelain | sed -nr 's/^\?\? (.*)$/\1/ p' )
 do
 	clear
 	rts $file >/dev/null 2>&1
-	echo -en "\n\nadd untracked file '$file'? (y[es]/n[o]/d[elete it]): "
-	
-	read -n 1 command
-	if [ $command == 'y' ]
-	then
-		echo
-		git add $file
-	elif [ $command == 'd' ]
-	then
-		echo
-		rm -i $file
-	fi
-		# command == 'n', don't add
+
+	while true
+	do
+		echo -en "\n\nadd untracked file '$file'? (y[es]/n[o]/d[elete it]): "
+		read command
+		if [ $command == 'y' ]
+		then
+			echo
+			git add $file
+			break
+		elif [ $command == 'n' ]
+		then
+			break
+		elif [ $command == 'd' ]
+		then
+			echo
+			rm -i $file
+			break
+		else
+			echo "Invalid command '$command'"
+		fi
+	done
 done
 
 # Deleted files
 for file in $( git status --porcelain | sed -nr 's/^ D (.*)$/\1/ p' )
 do
 	clear
-	echo -en "\n\nRemoved deleted file: '$file'? (y[es]/n[o]): "
-	read -n 1 command
-	if [ $command == 'y' ]
-	then
-		echo
-		git rm $file
-	fi
-		# command == 'n', don't add
+	while true
+	do
+		echo -en "\n\nRemoved deleted file: '$file'? (y[es]/n[o]): "
+		read command
+		if [ $command == 'y' ]
+		then
+			echo
+			git rm $file
+			break
+		elif [ $command == 'n' ]
+		then
+			break
+		else
+			echo "Invalid command '$command'"
+		fi
+	done
 done
 
 
 clear
 git status
 
-echo -en "\n\nCommit? (y[es]/n[o]/a[mend]/r[eset HEAD]): "
-read -n 1 command
-if [ $command == 'y' ]
-then
-	echo
-	git commit
-elif [ $command == 'a' ]
-then
-	echo
-	git commit --amend
-elif [ $command == 'r' ]
-then
-	echo
-	git reset HEAD
-fi
+while true
+do
+	echo -en "\n\nCommit? (y[es]/n[o]/a[mend]/r[eset HEAD]): "
+	read command
+	if [ $command == 'y' ]
+	then
+		echo
+		git commit
+		break
+	elif [ $command == 'n' ]
+	then
+		break
+	elif [ $command == 'a' ]
+	then
+		echo
+		git commit --amend
+		break
+	elif [ $command == 'r' ]
+	then
+		echo
+		git reset HEAD
+		break
+	else
+		echo "Invalid command '$command'"
+	fi
+done
