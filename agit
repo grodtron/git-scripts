@@ -14,7 +14,7 @@ for file in $( git status --porcelain | sed -nr 's/^ M (.*)$/\1/ p' )
 do
 	rts $file >/dev/null 2>&1
 	command=r
-	while [ $command == r ]
+	while [ "$command" == r ]
 	do
 		clear
 		echo -e "Diffing $file:\n\n"
@@ -26,23 +26,23 @@ do
 			echo -n "add file? (y[es]/n[o]/p[atch]/r[ediff]/c[checkout -- <file>]): "
 			read command
 
-			if [ $command == 'y' ]
+			if [ "$command" == 'y' ]
 			then
 				echo
 				git add $file
 				break
-			elif [ $command == 'n' ]
+			elif [ "$command" == 'n' ]
 			then
 				break
-			elif [ $command == 'p' ]
+			elif [ "$command" == 'p' ]
 			then
 				echo
 				git add -p $file
 				break
-			elif [ $command == 'r' ]
+			elif [ "$command" == 'r' ]
 			then
 				break
-			elif [ $command == 'c' ]
+			elif [ "$command" == 'c' ]
 			then
 				echo
 				git checkout -- $file
@@ -64,15 +64,15 @@ do
 	do
 		echo -en "\n\nadd untracked file '$file'? (y[es]/n[o]/d[elete it]): "
 		read command
-		if [ $command == 'y' ]
+		if [ "$command" == 'y' ]
 		then
 			echo
 			git add $file
 			break
-		elif [ $command == 'n' ]
+		elif [ "$command" == 'n' ]
 		then
 			break
-		elif [ $command == 'd' ]
+		elif [ "$command" == 'd' ]
 		then
 			echo
 			rm -i $file
@@ -91,12 +91,12 @@ do
 	do
 		echo -en "\n\nRemoved deleted file: '$file'? (y[es]/n[o]): "
 		read command
-		if [ $command == 'y' ]
+		if [ "$command" == 'y' ]
 		then
 			echo
 			git rm $file
 			break
-		elif [ $command == 'n' ]
+		elif [ "$command" == 'n' ]
 		then
 			break
 		else
@@ -113,20 +113,20 @@ while true
 do
 	echo -en "\n\nCommit? (y[es]/n[o]/a[mend]/r[eset HEAD]): "
 	read command
-	if [ $command == 'y' ]
+	if [ "$command" == 'y' ]
 	then
 		echo
 		git commit
 		break
-	elif [ $command == 'n' ]
+	elif [ "$command" == 'n' ]
 	then
 		break
-	elif [ $command == 'a' ]
+	elif [ "$command" == 'a' ]
 	then
 		echo
 		git commit --amend
 		break
-	elif [ $command == 'r' ]
+	elif [ "$command" == 'r' ]
 	then
 		echo
 		git reset HEAD
