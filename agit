@@ -10,7 +10,7 @@
 git status >/dev/null || exit 1
 
 # Modified files
-for file in $( git status --porcelain | sed -nr 's/^ M (.*)$/\1/ p' )
+for file in $( git status --porcelain | sed -nr 's/^[ A]M (.*)$/\1/ p' )
 do
 	rts $file >/dev/null 2>&1
 	command=r
