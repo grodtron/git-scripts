@@ -10,7 +10,7 @@
 git status >/dev/null || exit 1
 
 # Modified files
-for file in $( git status --porcelain | sed -nr 's/^[ A]M (.*)$/\1/ p' )
+for file in $( git status --porcelain | sed -nr 's/^[ AM]M (.*)$/\1/ p' )
 do
 	rts $file >/dev/null 2>&1
 	command=r
@@ -23,7 +23,7 @@ do
 
 		while true
 		do
-			echo -n "add file? (y[es]/n[o]/p[atch]/r[ediff]/c[checkout -- <file>]): "
+			echo -n "add file? (y[es]/n[o]/p[atch]/r[ediff]/c[checkout -- <file>]/s[hell]): "
 			read command
 
 			if [ "$command" == 'y' ]
@@ -47,6 +47,11 @@ do
 				echo
 				git checkout -- $file
 				break
+			elif [ "$command" == 's' ]
+			then
+				echo
+				bash
+				# do not break out of the loop after this!
 			else
 				echo "Invalid command '$command'"
 			fi
@@ -67,6 +72,7 @@ do
 		if [ "$command" == 'y' ]
 		then
 			echo
+			rts $file
 			git add $file
 			break
 		elif [ "$command" == 'n' ]

@@ -1,4 +1,4 @@
-# Removing Trailing Spaces 
+# Removing Trailing Spaces
 
 # Removes all trailing spaces from the given file.
 # converts the line endings to CRLF, because sed under
@@ -11,5 +11,4 @@ then
 	exit 0
 fi
 
-sed -i 's/[ \t]*$//' $1
-unix2dos $1
+sed -b -i 's/[ \t]*\(\r\?\)$/\1/' $1
