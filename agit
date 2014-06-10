@@ -123,9 +123,9 @@ do
 	then
 		echo
 		git commit
-
 		#If user decide to commit he maybe want to push also	
 		echo -en "\n\nPush? (y[es]/n[o]): "
+		read command
 			if [ "$command" == 'y' ]
 			then
 				echo
