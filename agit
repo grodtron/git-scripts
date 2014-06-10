@@ -123,6 +123,21 @@ do
 	then
 		echo
 		git commit
+
+		#If user decide to commit he maybe want to push also	
+		echo -en "\n\nPush? (y[es]/n[o]): "
+			if [ "$command" == 'y' ]
+			then
+				echo
+				git push
+				break
+			elif [ "$command" == 'n' ]
+			then
+				break
+			else
+				echo "invalid command '$command'"
+			fi
+
 		break
 	elif [ "$command" == 'n' ]
 	then
