@@ -9,6 +9,67 @@
 # make sure we're actually in a git repo.
 git status >/dev/null || exit 1
 
+gitroot=$(git rev-parse --show-toplevel)
+olddir=$(pwd)
+
+cd $gitroot
+
+# Untracked files
+for file in $( git status --porcelain | sed -nr 's/^\?\? (.*)$/\1/ p' )
+do
+	clear
+	rts $file >/dev/null 2>&1
+
+	while true
+	do
+		echo -en "\n\nadd untracked file '$file'? (y[es]/n[o]/d[elete it]/a[dd to .gitignore]): "
+		read command
+		if [ "$command" == 'y' ]
+		then
+			echo
+			rts $file
+			git add $file
+			break
+		elif [ "$command" == 'n' ]
+		then
+			break
+		elif [ "$command" == 'd' ]
+		then
+			echo
+			rm -i $file
+			break
+      elif [ "$command" == 'a' ]
+      then
+         echo $file >> .gitignore
+         break
+		else
+			echo "Invalid command '$command'"
+		fi
+	done
+done
+
+# Deleted files
+for file in $( git status --porcelain | sed -nr 's/^ D (.*)$/\1/ p' )
+do
+	clear
+	while true
+	do
+		echo -en "\n\nRemoved deleted file: '$file'? (y[es]/n[o]): "
+		read command
+		if [ "$command" == 'y' ]
+		then
+			echo
+			git rm $file
+			break
+		elif [ "$command" == 'n' ]
+		then
+			break
+		else
+			echo "Invalid command '$command'"
+		fi
+	done
+done
+
 # Modified files
 for file in $( git status --porcelain | sed -nr 's/^[ AM]M (.*)$/\1/ p' )
 do
@@ -59,100 +120,55 @@ do
 	done
 done
 
-# Untracked files
-for file in $( git status --porcelain | sed -nr 's/^\?\? (.*)$/\1/ p' )
-do
-	clear
-	rts $file >/dev/null 2>&1
-
-	while true
-	do
-		echo -en "\n\nadd untracked file '$file'? (y[es]/n[o]/d[elete it]): "
-		read command
-		if [ "$command" == 'y' ]
-		then
-			echo
-			rts $file
-			git add $file
-			break
-		elif [ "$command" == 'n' ]
-		then
-			break
-		elif [ "$command" == 'd' ]
-		then
-			echo
-			rm -i $file
-			break
-		else
-			echo "Invalid command '$command'"
-		fi
-	done
-done
-
-# Deleted files
-for file in $( git status --porcelain | sed -nr 's/^ D (.*)$/\1/ p' )
-do
-	clear
-	while true
-	do
-		echo -en "\n\nRemoved deleted file: '$file'? (y[es]/n[o]): "
-		read command
-		if [ "$command" == 'y' ]
-		then
-			echo
-			git rm $file
-			break
-		elif [ "$command" == 'n' ]
-		then
-			break
-		else
-			echo "Invalid command '$command'"
-		fi
-	done
-done
-
 
 clear
 git status
 
-while true
-do
-	echo -en "\n\nCommit? (y[es]/n[o]/a[mend]/r[eset HEAD]): "
-	read command
-	if [ "$command" == 'y' ]
-	then
-		echo
-		git commit
-		#If user decide to commit he maybe want to push also	
-		echo -en "\n\nPush? (y[es]/n[o]): "
-		read command
-			if [ "$command" == 'y' ]
-			then
-				echo
-				git push
-				break
-			elif [ "$command" == 'n' ]
-			then
-				break
-			else
-				echo "invalid command '$command'"
-			fi
+if git diff-index --quiet HEAD --
+then
+   echo "Nothing to commit"
+else
+   while true
+   do
+      echo -en "\n\nCommit? (y[es]/n[o]/a[mend]/r[eset HEAD]): "
+      read command
+      if [ "$command" == 'y' ]
+      then
+         echo
+         git commit
+         #If user decide to commit he maybe want to push also
+         echo -en "\n\nPush? (y[es]/n[o]): "
+         read command
+            if [ "$command" == 'y' ]
+            then
+               echo
+               git push
+               break
+            elif [ "$command" == 'n' ]
+            then
+               break
+            else
+               echo "invalid command '$command'"
+            fi
 
-		break
-	elif [ "$command" == 'n' ]
-	then
-		break
-	elif [ "$command" == 'a' ]
-	then
-		echo
-		git commit --amend
-		break
-	elif [ "$command" == 'r' ]
-	then
-		echo
-		git reset HEAD
-		break
-	else
-		echo "Invalid command '$command'"
-	fi
-done
+         break
+      elif [ "$command" == 'n' ]
+      then
+         break
+      elif [ "$command" == 'a' ]
+      then
+         echo
+         git commit --amend
+         break
+      elif [ "$command" == 'r' ]
+      then
+         echo
+         git reset HEAD
+         break
+      else
+         echo "Invalid command '$command'"
+      fi
+   done
+fi
+
+cd $olddir
