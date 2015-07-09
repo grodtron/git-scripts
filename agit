@@ -36,7 +36,7 @@ do
 		elif [ "$command" == 'd' ]
 		then
 			echo
-			rm -i $file
+			rm -rI $file
 			break
       elif [ "$command" == 'a' ]
       then
